@@ -1,0 +1,50 @@
+name: Semantic Versioning
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: semantic-versioning-main
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    name: Versions-Tag erstellen
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Repository inklusive Tags laden
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Git-Identität konfigurieren
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Versions-Tag erstellen
+        run: node scripts/version-tag.mjs
+
+      - name: Versions-Tag hochladen
+        shell: bash
+        run: |
+          while IFS= read -r tag; do
+            if [[ "$tag" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+              git push origin "refs/tags/$tag"
+            fi
+          done < <(git tag --points-at HEAD)
