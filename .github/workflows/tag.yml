@@ -13,8 +13,18 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  unit-tests:
+    name: Unit-Tests
+    uses: ./.github/workflows/unit-tests.yml
+
+  build:
+    name: Build
+    needs: unit-tests
+    uses: ./.github/workflows/build.yml
+
   tag:
     name: Versions-Tag erstellen
+    needs: [unit-tests, build]
     runs-on: ubuntu-latest
 
     permissions:

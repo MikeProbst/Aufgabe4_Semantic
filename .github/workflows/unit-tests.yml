@@ -1,0 +1,35 @@
+name: Unit Tests
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Vitest ausführen
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: semantic
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: semantic/package-lock.json
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Unit-Tests ausführen
+        run: npm run test:unit -- --run
