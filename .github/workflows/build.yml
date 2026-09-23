@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: sematic
+        working-directory: semantic
 
     steps:
       - name: Repository laden
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: sematic/package-lock.json
+          cache-dependency-path: semantic/package-lock.json
 
       - name: Abhängigkeiten installieren
         run: npm ci
