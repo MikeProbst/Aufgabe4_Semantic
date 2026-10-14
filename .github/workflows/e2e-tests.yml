@@ -1,0 +1,45 @@
+name: E2E Tests
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-tests:
+    name: Playwright ausführen
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        working-directory: semantic
+
+    steps:
+      - name: Repository laden
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Node.js einrichten
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: semantic/package-lock.json
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      - name: Browser und Systemabhängigkeiten installieren
+        run: npx playwright install --with-deps
+
+      - name: Projekt für Preview-Server bauen
+        run: npm run build
+
+      - name: E2E-Tests ausführen
+        run: npm run test:e2e
+        env:
+          CI: 'true'
+          PLAYWRIGHT_HTML_OPEN: 'never'
