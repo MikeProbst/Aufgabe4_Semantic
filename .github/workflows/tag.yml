@@ -1,6 +1,10 @@
-name: Semantic Versioning
+name: Tests, Build und Semantic Versioning
 
 on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
   push:
     branches:
       - main
@@ -9,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: semantic-versioning-main
+  group: m324-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -17,14 +21,23 @@ jobs:
     name: Unit-Tests
     uses: ./.github/workflows/unit-tests.yml
 
+  e2e-tests:
+    name: E2E-Tests
+    uses: ./.github/workflows/e2e-tests.yml
+
+  lint:
+    name: Lint
+    uses: ./.github/workflows/lint.yml
+
   build:
     name: Build
-    needs: unit-tests
+    needs: [unit-tests, e2e-tests, lint]
     uses: ./.github/workflows/build.yml
 
   tag:
     name: Versions-Tag erstellen
-    needs: [unit-tests, build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [unit-tests, e2e-tests, lint, build]
     runs-on: ubuntu-latest
 
     permissions:
