@@ -30,3 +30,42 @@ npm run build
 git commit --allow-empty -m "ci: trigger pipeline"
 git push
 ```
+
+
+
+Aufgabe 4
+
+## Deployment auf AWS S3
+
+Voraussetzungen: Terraform, AWS CLI und gültige AWS-Credentials
+(bei AWS Academy nach jedem Lab-Start neu aus "AWS Details" kopieren).
+
+```bash
+cd semantic
+
+# Credentials prüfen
+aws sts get-caller-identity
+
+# S3 Bucket mit Website-Hosting erstellen (nur einmal nötig)
+terraform init
+terraform apply
+
+# App bauen und hochladen
+npm install
+npm run build
+npm run deploy-aws
+```
+
+Die Webseite ist danach erreichbar unter:
+http://m324-semantic-mikeprobst.s3-website-us-east-1.amazonaws.com
+
+Aufräumen (löscht den Bucket inkl. Inhalt):
+
+```bash
+terraform destroy
+```
+
+Hinweis: Der Bucket wird über `terraform_data` + AWS CLI erstellt statt mit
+`aws_s3_bucket`, weil eine Service Control Policy im AWS Academy Lab
+`s3:GetBucketObjectLockConfiguration` verbietet.
+
