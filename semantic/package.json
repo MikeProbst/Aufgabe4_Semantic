@@ -11,7 +11,8 @@
     "test:e2e": "playwright test",
     "lint": "run-s \"lint:*\"",
     "lint:oxlint": "oxlint .",
-    "lint:eslint": "eslint . --cache"
+    "lint:eslint": "eslint . --cache",
+    "deploy-aws": "aws s3 sync ./dist s3://m324-semantic-mikeprobst --region us-east-1 --delete"
   },
   "dependencies": {
     "vue": "^3.5.40"
